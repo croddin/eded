@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html><head>
+    <title>eded</title>
+    <style>
+        body {background:#ddd}
+        #code, iframe{height:95%;background:white;position:fixed;}
+        #code {left: 0%;font-size:12px;width:50%;}
+        iframe {left:50%;width:50%}
+    </style>
+    <meta class="ededIgnoreAfter">
+</head>
+<body>
+    <div>
+        <a href="https://github.com/croddin/eded">eded</a>
+        <input id="live" checked="" type="checkbox">Update when I type
+        | <button id="edit_editor">Edit Editor</button>
+        | <a href="" id="visit">Visit</a>
+    </div>
+    <div id="code" class="ededIgnore"></div>
+    <iframe id="view" src=""></iframe>
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="http://ajaxorg.github.com/ace/build/src/ace.js"></script>
+    <script id="script">
+        ed = ace.edit("code").getSession()
+        ed.setMode("ace/mode/html")
+        ed.on('change', updateIfChecked)
+        
+        $('#edit_editor').on('click', editSelf)
+        function updateIfChecked(){
+            if ($('#live').is(':checked')) update();
+        }
+        function update() {
+            var url = "data:text/html;charset=utf-8," + encodeURI(ed.getValue()) 
+            $("#view")[0].src = $("#visit")[0].href = url
+        }
+        function getCleanDom(){
+            var dom = $('html').clone()
+            dom.find('#view')[0].src = dom.find("#visit")[0].href = ""
+            dom.find('.ededIgnoreAfter~*').remove()
+            dom.find('.ededIgnore').empty().removeClass().addClass('ededIgnore')
+            return dom
+        }
+        function getSelf() {
+            return '<!DOCTYPE html>\n<html>'+getCleanDom().html()+'</html>'
+        }
+        function editSelf(){ed.setValue(getSelf());update();}
+    </script>
+    <script class="ededIgnoreAfter"></script>
+</body></html>
