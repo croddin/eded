@@ -30,7 +30,7 @@
             if ($('#live').is(':checked')) update();
         }
         function update() {
-            var url = "data:text/html;charset=utf-8," + encodeURI(ed.getValue()) 
+            var url = "data:text/html;charset=utf-8," + encodeURIComponent(ed.getValue()) 
             $("#view")[0].src = $("#visit")[0].href = url
         }
         function getCleanDom(){
