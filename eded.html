@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html><head>
     <title>eded</title>
-    <style>
-        body {background:#ddd}
-        #code, iframe{height:95%;background:white;position:fixed;}
-        #code {left: 0%;font-size:12px;width:50%;}
-        iframe {left:50%;width:50%}
-    </style>
-    <meta class="ededIgnoreAfter">
 </head>
 <body>
+        <style>
+        body {background:#ddd}
+        #code, iframe{height:95%;background:white;position:fixed;width:50%;}
+        #code {left: 0%;}
+        iframe {left:50%;}
+    </style>
     <div>
         <a href="https://github.com/croddin/eded">eded</a>
         <input id="live" checked="" type="checkbox">Update when I type
@@ -18,32 +17,28 @@
     </div>
     <div id="code" class="ededIgnore"></div>
     <iframe id="view" src=""></iframe>
-    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
     <script src="http://ajaxorg.github.com/ace/build/src/ace.js"></script>
-    <script id="script">
+    <script>
         ed = ace.edit("code").getSession()
         ed.setMode("ace/mode/html")
         ed.on('change', updateIfChecked)
-        
-        $('#edit_editor').on('click', editSelf)
         function updateIfChecked(){
-            if ($('#live').is(':checked')) update();
+            if (document.querySelector('#live').matches(':checked')) update();
         }
         function update() {
-            var url = "data:text/html;charset=utf-8," + encodeURIComponent(ed.getValue()) 
-            $("#view")[0].src = $("#visit")[0].href = url
-        }
-        function getCleanDom(){
-            var dom = $('html').clone()
-            dom.find('#view')[0].src = dom.find("#visit")[0].href = ""
-            dom.find('.ededIgnoreAfter~*').remove()
-            dom.find('.ededIgnore').empty().removeClass().addClass('ededIgnore')
-            return dom
+            var url = "data:text/html;charset=utf-8,"+encodeURIComponent(ed.getValue()) 
+            document.querySelector("#view").src = document.querySelector("#visit").href = url
         }
         function getSelf() {
-            return '<!DOCTYPE html>\n<html>'+getCleanDom().html()+'</html>'
+            var doctype = new XMLSerializer().serializeToString(document.doctype)
+            var dom = document.querySelector(':root').cloneNode(true)
+            dom.querySelector('iframe#view').src = dom.querySelector('#visit').href = ""
+            dom.querySelectorAll('head>style,head>script').forEach((e)=>e.remove())
+            dom.querySelector('.ededIgnore').innerHTML = ""
+            dom.querySelector('.ededIgnore').className = "ededIgnore"
+            return doctype+'\n'+dom.outerHTML
         }
         function editSelf(){ed.setValue(getSelf());update();}
+        document.querySelector('#edit_editor').onclick = editSelf
     </script>
-    <script class="ededIgnoreAfter"></script>
 </body></html>
