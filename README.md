@@ -3,13 +3,13 @@ eded
 
 html editor in a data url that can edit itself
 
-##Opening
+## Opening
 
 Visit this url to load the current version
 
-    data:text/html,<script>function l(r){location="data:text/html;charset=utf-8;base64,"+r.data.content}</script><script src="https://api.github.com/repos/croddin/eded/contents/eded.html?callback=l"></script>
+    data:text/html,<iframe style="width:100%;height:100%;"></iframe><script>function l(r){document.querySelector('iframe').src="data:text/html;charset=utf-8;base64,"+r.data.content}</script><script src="https://api.github.com/repos/croddin/eded/contents/eded.html?callback=l"></script>
  
-##Features
+## Features
 
 
 * __Live updating__ Check or uncheck "Update when i type" to make it so the page is rendered as you type.
