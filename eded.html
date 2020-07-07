@@ -1,44 +1,37 @@
 <!DOCTYPE html>
-<html><head>
-    <title>eded</title>
-</head>
-<body>
-        <style>
-        body {background:#ddd}
-        #code, iframe{height:95%;background:white;position:fixed;width:50%;}
-        #code {left: 0%;}
-        iframe {left:50%;}
-    </style>
-    <div>
-        <a href="https://github.com/croddin/eded">eded</a>
-        <input id="live" checked="" type="checkbox">Update when I type
-        | <button id="edit_editor">Edit Editor</button>
-        | <a href="" id="visit">Visit</a>
-    </div>
-    <div id="code" class="ededIgnore"></div>
-    <iframe id="view" src=""></iframe>
-    <script src="https://ace.c9.io/build/src/ace.js"></script>
-    <script>
-        ed = ace.edit("code").getSession()
-        ed.setMode("ace/mode/html")
-        ed.on('change', updateIfChecked)
-        function updateIfChecked(){
-            if (document.querySelector('#live').matches(':checked')) update();
-        }
-        function update() {
-            var url = "data:text/html;charset=utf-8,"+encodeURIComponent(ed.getValue()) 
-            document.querySelector("#view").src = document.querySelector("#visit").href = url
-        }
-        function getSelf() {
-            var doctype = new XMLSerializer().serializeToString(document.doctype)
-            var dom = document.querySelector(':root').cloneNode(true)
-            dom.querySelector('iframe#view').src = dom.querySelector('#visit').href = ""
-            dom.querySelectorAll('head>style,head>script').forEach((e)=>e.remove())
-            dom.querySelector('.ededIgnore').innerHTML = ""
-            dom.querySelector('.ededIgnore').className = "ededIgnore"
-            return doctype+'\n'+dom.outerHTML
-        }
-        function editSelf(){ed.setValue(getSelf());update();}
-        document.querySelector('#edit_editor').onclick = editSelf
-    </script>
-</body></html>
+<html><head><title>eded</title></head><body>
+<style>
+    body,#code,#view {height:100%;width:100%;background:#fff;}
+    body {display:grid;grid-template:30px 1fr/1fr 1fr;
+        position:fixed;background:#ddd;}
+    header {grid-column:span 2;}
+</style>
+<header>
+    <a href="https://github.com/croddin/eded">eded</a>
+    <input id="live" checked="" type="checkbox">Update when I type
+    | <button id="edit_editor">Edit Editor</button>
+    | <a href="" id="visit">Visit</a>
+</header>
+<div id="code" data-keybinding-context="1" data-mode-id="html"></div>
+<iframe id="view" src=""></iframe>
+<script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
+<script>
+require.config({paths:{"vs":"https://unpkg.com/monaco-editor/min/vs"}});
+require(["vs/editor/editor.main"], ()=>{
+    var $ = document.querySelector.bind(document)
+    var model = monaco.editor.create($("#code"),{language:"html"}).getModel()
+    var update = ()=>{
+        var url = `data:text/html;base64,${btoa(model.getValue())}`
+        $("#view").src = $("#visit").href = url
+    }
+    var getSelf = ()=>{
+        var dom = $(":root").cloneNode(true)
+        dom.querySelector("#view").src = dom.querySelector("#visit").href = ""
+        dom.querySelectorAll("head *:not(title),script~div,#code *")
+            .forEach(e=>e.remove())
+        return `<!DOCTYPE html>\n${dom.outerHTML}`
+    }
+    model.onDidChangeContent(()=>{if($("#live").checked)update()})
+    $("#edit_editor").onclick=()=>{model.setValue(getSelf());update();}
+});
+</script></body></html>
