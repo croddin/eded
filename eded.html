@@ -12,7 +12,7 @@
     | <button id="edit_editor">Edit Editor</button>
     | <a href="" id="visit">Visit</a>
 </header>
-<div id="code" data-keybinding-context="1" data-mode-id="html"></div>
+<div id="code"></div>
 <iframe id="view" src=""></iframe>
 <script src="https://unpkg.com/monaco-editor/min/vs/loader.js"></script>
 <script>
@@ -29,9 +29,15 @@ require(["vs/editor/editor.main"], ()=>{
         dom.querySelector("#view").src = dom.querySelector("#visit").href = ""
         dom.querySelectorAll("head *:not(title),script~div,#code *")
             .forEach(e=>e.remove())
+        removeAttrs(dom.querySelector("#code"))
         return `<!DOCTYPE html>\n${dom.outerHTML}`
+    }
+    var removeAttrs = (el)=>{
+        [...el.attributes].map(a=>a.name).filter(n=>n!='id')
+            .forEach((n)=>el.removeAttribute(n))
     }
     model.onDidChangeContent(()=>{if($("#live").checked)update()})
     $("#edit_editor").onclick=()=>{model.setValue(getSelf());update();}
 });
-</script></body></html>
+</script>
+</body></html>
