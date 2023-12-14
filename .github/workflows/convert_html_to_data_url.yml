@@ -20,4 +20,4 @@ jobs:
         npm install fs
 
     - name: Convert HTML to Data URL
-      run: node convert.js
+      run: node .github/workflows/convert.js
